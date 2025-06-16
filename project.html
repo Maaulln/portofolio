@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyek - Portofolio Waan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+:root {
+--primary-purple: #7c3aed;
+--primary-green: #10b981;
+--accent-blue: #3b82f6;
+--dark-bg: #030712;
+--card-bg: rgba(15, 23, 42, 0.8);
+--glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+scroll-behavior: smooth;
+}
+
+body {
+font-family: 'Inter', sans-serif;
+background: var(--dark-bg);
+color: #f8fafc;
+overflow-x: hidden;
+}
+
+.animated-bg {
+position: fixed;
+inset: 0;
+z-index: -2;
+background: radial-gradient(circle at 20% 50%, rgba(124, 58, 237, 0.2) 0%, transparent 50%),
+radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.2) 0%, transparent 50%);
+}
+
+.gradient-text {
+background: linear-gradient(135deg, #7c3aed 0%, #10b981 50%, #3b82f6 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+
+.project-card {
+background: var(--card-bg);
+backdrop-filter: blur(10px);
+border: 1px solid var(--glass-border);
+border-radius: 20px;
+overflow: hidden;
+transition: transform 0.3s ease, opacity 0.4s ease;
+}
+
+.project-card:hover {
+transform: translateY(-8px);
+}
+
+.project-image {
+height: 200px;
+overflow: hidden;
+background-color: rgba(255,255,255,0.05);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.btn-primary {
+background: linear-gradient(135deg, #7c3aed 0%, #10b981 100%);
+border: none;
+padding: 0.5rem 1rem;
+border-radius: 10px;
+font-weight: 600;
+font-size: 0.9rem;
+cursor: pointer;
+transition: transform 0.2s ease;
+color: white;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+}
+
+.btn-secondary {
+border: 2px solid #7c3aed;
+background: transparent;
+color: #7c3aed;
+padding: calc(0.5rem - 2px) calc(1rem - 2px);
+border-radius: 10px;
+font-weight: 600;
+font-size: 0.9rem;
+transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+background: #7c3aed;
+color: white;
+}
+
+.filter-btn {
+background: transparent;
+border: 1px solid var(--glass-border);
+color: #a1a1aa;
+padding: 0.5rem 1.25rem;
+border-radius: 10px;
+font-weight: 500;
+transition: all 0.2s ease;
+cursor: pointer;
+}
+.filter-btn:hover {
+background-color: rgba(124, 58, 237, 0.2);
+color: white;
+}
+.filter-btn.active {
+background: var(--primary-purple);
+color: white;
+border-color: var(--primary-purple);
+}
+</style>
+</head>
+<body>
+
+<div class="animated-bg"></div>
+
+<header class="sticky top-0 z-50" style="background: rgba(3, 7, 18, 0.6); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+  <nav class="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
+    <a href="index.html" class="flex items-center space-x-3">
+      <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-green-500 rounded-xl flex items-center justify-center">
+        <span class="text-lg font-bold text-white">W</span>
+      </div>
+      <span class="text-xl font-bold gradient-text">Waan</span>
+    </a>
+    <a href="index.html" class="filter-btn hover:bg-green-500/20 hover:border-green-500">
+      ← Kembali ke Beranda
+    </a>
+  </nav>
+</header>
+
+<main class="pt-16 pb-28">
+  <section id="projects" class="px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center my-16">
+        <h1 class="text-5xl font-extrabold">Katalog Proyek</h1>
+        <p class="text-gray-400 mt-4 text-lg">Berikut adalah semua proyek yang pernah saya kerjakan.</p>
+      </div>
+
+      <div id="filter-container" class="flex justify-center flex-wrap gap-3 mb-16">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        <button class="filter-btn" data-filter="video">Video Editing</button>
+        <button class="filter-btn" data-filter="uiux">UI/UX Design</button>
+        <button class="filter-btn" data-filter="ml">Machine Learning</button>
+      </div>
+
+      <div id="project-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        </div>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-slate-900/50 border-t border-slate-800">
+  <div class="max-w-7xl mx-auto py-8 px-6 text-center">
+    <p class="text-gray-500 text-sm">
+      © 2025 Waan. All Rights Reserved.
+    </p>
+  </div>
+</footer>
+
+<script src="database.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- FUNGSI UNTUK MENAMPILKAN PROYEK ---
+    const projectGrid = document.getElementById('project-grid');
+    function renderProjects(filter = 'all') {
+        projectGrid.innerHTML = ''; // Kosongkan grid
+        
+        // Cek jika projectsData sudah ada
+        if (typeof projectsData === 'undefined') {
+            console.error('Database proyek (database.js) tidak ditemukan atau gagal dimuat.');
+            return;
+        }
+
+        const filteredProjects = projectsData.filter(project => {
+            return filter === 'all' || project.category === filter;
+        });
+
+        filteredProjects.forEach(project => {
+            const tagsHTML = project.tags.map(tag => `<span class="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-xs font-medium">${tag}</span>`).join(' ');
+            
+            const cardHTML = `
+                <div class="project-card" data-category="${project.category}">
+                  <div class="project-image bg-gradient-to-br ${project.imageGradient}">
+                    <img src="${project.imageUrl}" alt="${project.title}" class="w-full h-full object-cover" style="object-fit: cover;">
+                  </div>
+                  <div class="p-6 space-y-4">
+                    <div class="flex flex-wrap gap-2">
+                      ${tagsHTML}
+                    </div>
+                    <h4 class="font-bold text-xl text-white">${project.subtitle}</h4>
+                    <p class="text-gray-400 leading-relaxed text-sm">${project.description}</p>
+                    <div class="flex space-x-3 pt-2">
+                      <a href="${project.buttonLink}" class="${project.buttonType === 'primary' ? 'btn-primary' : 'btn-secondary'} text-sm py-2 px-4" style="padding: 0.5rem 1rem;">
+                        <span>${project.buttonText}</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+            `;
+            projectGrid.innerHTML += cardHTML;
+        });
+    }
+
+    // --- LOGIKA FILTER ---
+    const filterContainer = document.getElementById('filter-container');
+    const filterButtons = filterContainer.querySelectorAll('.filter-btn');
+
+    filterContainer.addEventListener('click', function(e) {
+      if (e.target.tagName !== 'BUTTON') return;
+
+      const filterValue = e.target.getAttribute('data-filter');
+
+      filterButtons.forEach(button => {
+        button.classList.remove('active');
+      });
+      e.target.classList.add('active');
+
+      renderProjects(filterValue);
+    });
+
+    // --- TAMPILKAN SEMUA PROYEK SAAT HALAMAN DIBUKA ---
+    renderProjects('all');
+  });
+</script>
+
+</body>
+</html>
